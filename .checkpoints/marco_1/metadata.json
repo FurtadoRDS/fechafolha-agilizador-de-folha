@@ -1,0 +1,6 @@
+{
+  "name": "ÓticaFolha - Fechamento de Salários e Comissões",
+  "description": "Sistema ágil de gestão e fechamento financeiro de salários e comissões para rede de óticas com exportação para Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
