@@ -24,10 +24,10 @@ export const DeleteStoreModal: React.FC<DeleteStoreModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative rounded-2xl bg-[#0D0F17] shadow-2xl border border-white/10 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Top ambient highlight (Rose/Danger glow) */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-rose-500/50 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/6 bg-white/2">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]">
               <Trash2 className="w-4 h-4" />
@@ -44,7 +44,7 @@ export const DeleteStoreModal: React.FC<DeleteStoreModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/6 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -64,18 +64,18 @@ export const DeleteStoreModal: React.FC<DeleteStoreModalProps> = ({
             </p>
           </div>
 
-          <div className="text-xs text-slate-400 font-mono bg-white/[0.02] border border-white/[0.06] rounded-xl p-3 flex items-center justify-between">
+          <div className="text-xs text-slate-400 font-mono bg-white/2 border border-white/6 rounded-xl p-3 flex items-center justify-between">
             <span>Vendas registradas:</span>
             <span className="text-white font-bold tabular-nums">{formatBRL(store.totalSales)}</span>
           </div>
 
-          <div className="text-xs text-slate-400 font-mono bg-white/[0.02] border border-white/[0.06] rounded-xl p-3 flex items-center justify-between">
+          <div className="text-xs text-slate-400 font-mono bg-white/2 border border-white/6 rounded-xl p-3 flex items-center justify-between">
             <span>Equipe cadastrada:</span>
             <span className="text-white font-bold">{sellersCount} {sellersCount === 1 ? 'colaborador' : 'colaboradores'}</span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/[0.06]">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/6">
             <button
               type="button"
               onClick={onClose}
@@ -89,7 +89,7 @@ export const DeleteStoreModal: React.FC<DeleteStoreModalProps> = ({
                 onConfirmDelete(store.id);
                 onClose();
               }}
-              className="flex items-center gap-2 px-4.5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-rose-600 to-red-500 hover:from-rose-500 hover:to-red-400 rounded-lg shadow-[0_0_15px_rgba(244,63,94,0.35)] hover:shadow-[0_0_25px_rgba(244,63,94,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-4.5 py-2 text-xs font-semibold text-white bg-linear-to-r from-rose-600 to-red-500 hover:from-rose-500 hover:to-red-400 rounded-lg shadow-[0_0_15px_rgba(244,63,94,0.35)] hover:shadow-[0_0_25px_rgba(244,63,94,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-0.5"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Sim, Excluir Loja</span>

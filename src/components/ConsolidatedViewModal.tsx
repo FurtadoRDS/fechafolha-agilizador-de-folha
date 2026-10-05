@@ -47,16 +47,16 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative rounded-2xl bg-[#0D0F17] shadow-2xl border border-white/10 w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Top ambient highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/6 bg-white/2">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.15)]">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
+              <h3 className="text-base font-bold bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
                 Consolidado Geral de Vendas e Salários da Rede
               </h3>
               <p className="text-xs text-slate-400 font-mono">
@@ -67,7 +67,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/6 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -78,20 +78,20 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
           <div className="border border-white/10 rounded-xl overflow-hidden shadow-inner">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white/[0.03] text-[11px] font-mono text-slate-400 uppercase tracking-wider border-b border-white/10">
+                <tr className="bg-white/3 text-[11px] font-mono text-slate-400 uppercase tracking-wider border-b border-white/10">
                   <th className="py-3 px-4">Loja</th>
                   <th className="py-3 px-4 text-right">Vendas da Loja</th>
                   <th className="py-3 px-4 text-right">Vendas da Equipe</th>
                   <th className="py-3 px-4 text-center">Funcionários</th>
                   <th className="py-3 px-4 text-right">Salários Base</th>
                   <th className="py-3 px-4 text-right">Comissões</th>
-                  <th className="py-3 px-4 text-right bg-emerald-500/[0.04] text-emerald-300 border-l border-r border-emerald-500/10">
+                  <th className="py-3 px-4 text-right bg-emerald-500/4 text-emerald-300 border-l border-r border-emerald-500/10">
                     Total a Pagar no Mês
                   </th>
                   <th className="py-3 px-4 text-center">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04] text-xs">
+              <tbody className="divide-y divide-white/4 text-xs">
                 {stores.map((store) => {
                   const sellers = store.sellers || [];
                   const storeSales = store.totalSales || 0;
@@ -120,7 +120,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
                       <td className="py-3.5 px-4 text-right font-mono tabular-nums text-indigo-400">
                         {formatBRL(storeComm)}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-mono tabular-nums font-bold text-emerald-300 bg-emerald-500/[0.03] border-l border-r border-emerald-500/10">
+                      <td className="py-3.5 px-4 text-right font-mono tabular-nums font-bold text-emerald-300 bg-emerald-500/3 border-l border-r border-emerald-500/10">
                         {formatBRL(storePayroll)}
                       </td>
                       <td className="py-3.5 px-4 text-center">
@@ -152,7 +152,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
                 })}
               </tbody>
               <tfoot>
-                <tr className="border-t-2 border-white/15 bg-white/[0.04] font-bold text-xs text-white">
+                <tr className="border-t-2 border-white/15 bg-white/4 font-bold text-xs text-white">
                   <td className="py-3.5 px-4 uppercase tracking-wider font-mono font-bold text-slate-300">
                     TOTAL DA REDE
                   </td>
@@ -171,7 +171,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
                   <td className="py-3.5 px-4 text-right font-mono tabular-nums text-indigo-300">
                     {formatBRL(networkCommissions)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-mono tabular-nums text-emerald-300 bg-emerald-500/[0.08] border-l border-r border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  <td className="py-3.5 px-4 text-right font-mono tabular-nums text-emerald-300 bg-emerald-500/8 border-l border-r border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
                     <span className="text-base font-bold text-emerald-300">
                       {formatBRL(networkPayroll)}
                     </span>
@@ -184,7 +184,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4.5 border-t border-white/[0.06] bg-white/[0.02]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4.5 border-t border-white/6 bg-white/2">
           <span className="text-xs text-slate-400 font-mono">
             Exporta abas individuais para cada loja e aba de resumo geral.
           </span>
@@ -192,7 +192,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 rounded-xl transition-all cursor-pointer"
+              className="px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white bg-white/4 hover:bg-white/8 border border-white/10 rounded-xl transition-all cursor-pointer"
             >
               Fechar
             </button>
@@ -202,7 +202,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
                 onExportExcel('mobile');
                 onClose();
               }}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 rounded-xl shadow-[0_0_15px_rgba(52,211,153,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-950 bg-linear-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 rounded-xl shadow-[0_0_15px_rgba(52,211,153,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
               title="Exportar versão otimizada para celular / WhatsApp"
             >
               <Smartphone className="w-3.5 h-3.5 text-slate-950" />
@@ -214,7 +214,7 @@ export const ConsolidatedViewModal: React.FC<ConsolidatedViewModalProps> = ({
                 onExportExcel('desktop');
                 onClose();
               }}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-950 bg-linear-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.35)] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
               title="Exportar versão tradicional para computador"
             >
               <Monitor className="w-3.5 h-3.5 text-slate-950" />

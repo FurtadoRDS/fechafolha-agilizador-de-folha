@@ -40,15 +40,15 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
   };
 
   return (
-    <div className="relative rounded-2xl bg-[#0D0F17]/80 backdrop-blur-md border border-white/10 p-6 mb-6 shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 duration-700 overflow-hidden">
+    <div className="relative rounded-2xl bg-[#0D0F17]/80 backdrop-blur-md border border-white/10 p-6 mb-6 shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 overflow-hidden">
       {/* Subtle Linear top border glow highlight */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/50 to-transparent" />
       
       {/* Store Title Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-white/[0.06]">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-white/6">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
               {store.name}
             </h1>
 
@@ -102,7 +102,7 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
 
         {/* Right side: Vendas da Loja + Botões de Exportação Exclusiva da Loja */}
         <div className="flex flex-wrap items-center gap-4">
-          <div className="text-left lg:text-right bg-white/[0.03] px-4 py-2 rounded-xl border border-white/10 shadow-sm">
+          <div className="text-left lg:text-right bg-white/3 px-4 py-2 rounded-xl border border-white/10 shadow-sm">
             <span className="block text-[10px] font-sans font-semibold text-slate-400 uppercase tracking-wider">
               Vendas Registradas da Loja
             </span>
@@ -112,7 +112,7 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
           </div>
 
           {onExportStoreExcel && (
-            <div className="flex items-center gap-1.5 bg-white/[0.03] p-1.5 rounded-xl border border-white/10">
+            <div className="flex items-center gap-1.5 bg-white/3 p-1.5 rounded-xl border border-white/10">
               <span className="text-[10px] font-sans font-semibold uppercase text-slate-400 px-1 hidden sm:inline">
                 Planilha da Loja:
               </span>
@@ -151,12 +151,12 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-5">
         
         {/* Card 1: Vendas da Equipe */}
-        <div className="group relative bg-white/[0.02] border border-white/5 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/[0.04] transition-colors duration-300">
+        <div className="group relative bg-white/2 border border-white/5 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/4 transition-colors duration-300">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs uppercase tracking-wider font-semibold text-slate-400 font-sans">
               Vendas da Equipe
             </span>
-            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center text-slate-300 group-hover:text-white transition-colors">
+            <div className="w-7 h-7 rounded-lg bg-white/4 border border-white/10 flex items-center justify-center text-slate-300 group-hover:text-white transition-colors">
               <TrendingUp className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -173,12 +173,12 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
         </div>
 
         {/* Card 2: Salários Base */}
-        <div className="group relative bg-white/[0.02] border border-white/5 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/[0.04] transition-colors duration-300">
+        <div className="group relative bg-white/2 border border-white/5 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/4 transition-colors duration-300">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs uppercase tracking-wider font-semibold text-slate-400 font-sans">
               Total Salários Base
             </span>
-            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center text-slate-300 group-hover:text-white transition-colors">
+            <div className="w-7 h-7 rounded-lg bg-white/4 border border-white/10 flex items-center justify-center text-slate-300 group-hover:text-white transition-colors">
               <DollarSign className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -191,7 +191,7 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
         </div>
 
         {/* Card 3: Comissões */}
-        <div className="group relative bg-white/[0.02] border border-white/5 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/[0.04] transition-colors duration-300">
+        <div className="group relative bg-white/2 border border-white/5 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/4 transition-colors duration-300">
           <div className="flex items-center justify-between text-indigo-300 mb-2">
             <span className="text-xs uppercase tracking-wider font-semibold text-slate-400 font-sans">
               Total Comissões
@@ -209,7 +209,7 @@ export const StoreHeader: React.FC<StoreHeaderProps> = ({
         </div>
 
         {/* Card 4: TOTAL A PAGAR NO MÊS (Highlight com brilho verde/ciano suave) */}
-        <div className="group relative overflow-hidden bg-white/[0.02] border border-emerald-500/20 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/[0.04] transition-colors duration-300">
+        <div className="group relative overflow-hidden bg-white/2 border border-emerald-500/20 backdrop-blur-sm rounded-xl p-5 shadow-lg hover:bg-white/4 transition-colors duration-300">
           {/* Sutil brilho de fundo esmeralda/ciano */}
           <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 blur-2xl rounded-full pointer-events-none" />
           <div className="flex items-center justify-between text-emerald-300 mb-2">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store as StoreIcon, Plus, FileSpreadsheet, ShieldCheck, Database, ArrowRight, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, FileSpreadsheet, ShieldCheck, Database, ArrowRight, Trash2, ExternalLink } from 'lucide-react';
 import { parseNumberInput, formatBRL } from '../utils/formatters';
 import { Store } from '../types/closing';
 
@@ -43,12 +43,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div className="relative max-w-2xl mx-auto py-12 px-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
-      {/* 1. Background com Profundidade (Glow Difuso Profissional) */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* Barra de Retorno quando já existem lojas cadastradas */}
       {existingStoresCount > 0 && onBackToDashboard && (
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 mb-8 bg-white/[0.03] border border-white/10 rounded-2xl backdrop-blur-md shadow-lg">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 mb-8 bg-white/3 border border-white/10 rounded-2xl backdrop-blur-md shadow-lg">
           <div className="flex items-center gap-2.5 text-xs text-slate-300 font-mono">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             <span>
@@ -66,12 +64,20 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </div>
       )}
 
-      {/* 2. Títulos e Tipografia */}
+      {/* 2. Títulos e Logo Customizada */}
       <div className="relative text-center mb-10">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-transparent border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_25px_rgba(16,185,129,0.2)] mb-5">
-          <StoreIcon className="w-8 h-8" />
+        {/* Caixa aumentada (w-24 h-24) com padding reduzido (p-2) */}
+        <div className="w-24 h-24 rounded-3xl bg-linear-to-br from-emerald-500/20 via-teal-500/10 to-transparent border border-emerald-500/30 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(16,185,129,0.2)] mb-6 p-2 relative overflow-hidden">
+          {/* Brilho interno dinâmico */}
+          <div className="absolute inset-0 bg-emerald-400/5 blur-xl rounded-full pointer-events-none" />
+          <img 
+            src="/favicon.png" 
+            alt="FechaFolha Logo" 
+            /* scale-125 para o ícone explodir e ocupar a caixa de forma majestosa */
+            className="relative z-10 w-full h-full object-contain scale-125 drop-shadow-[0_0_15px_rgba(52,211,153,0.7)]" 
+          />
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-emerald-400 to-cyan-400">
           Fechamento de Salários e Comissões
         </h1>
         <p className="text-sm text-slate-400 max-w-md mx-auto mt-3 leading-relaxed">
@@ -79,16 +85,14 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </p>
       </div>
 
-      {/* 3. Card Principal (Liquid Glass) */}
       <div className="relative bg-[#090A0F]/60 border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-2xl p-6 sm:p-8 overflow-hidden">
-        {/* Top ambient highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
 
-        <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2.5 pb-4 mb-6 border-b border-white/6">
           <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
             <Plus className="w-3.5 h-3.5" />
           </div>
-          <h2 className="text-base font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-400">
+          <h2 className="text-base font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-emerald-400 to-cyan-400">
             {existingStoresCount > 0 ? 'Cadastrar Nova Loja na Rede' : 'Cadastrar a Primeira Loja da Rede'}
           </h2>
         </div>
@@ -147,16 +151,15 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}
                 placeholder="Ex: Outubro / 2026"
-                className="w-full px-3.5 py-2.5 text-sm bg-black/20 border border-white/5 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300"
+                className="w-full px-3.5 py-2.5 text-sm bg-black/20 border border-white/5 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 transition-all duration-300"
               />
             </div>
           </div>
 
-          {/* 4. Botão Principal (Premium Call-to-Action) */}
           <div className="pt-3">
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 text-sm bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-medium rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 text-sm bg-linear-to-r from-emerald-500 to-emerald-400 text-white font-medium rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
             >
               <Plus className="w-4 h-4 text-white" />
               <span>
@@ -166,18 +169,18 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           </div>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-white/[0.06] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+        <div className="mt-8 pt-6 border-t border-white/6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <div className="p-3 rounded-xl bg-white/2 border border-white/4">
             <Database className="w-4 h-4 text-emerald-400 mx-auto mb-1.5" />
             <h4 className="text-xs font-semibold text-slate-200">100% Local</h4>
             <p className="text-[11px] text-slate-500 mt-0.5 font-mono">Dados salvos com segurança no navegador</p>
           </div>
-          <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+          <div className="p-3 rounded-xl bg-white/2 border border-white/4">
             <FileSpreadsheet className="w-4 h-4 text-emerald-400 mx-auto mb-1.5" />
             <h4 className="text-xs font-semibold text-slate-200">Exportação Excel</h4>
             <p className="text-[11px] text-slate-500 mt-0.5 font-mono">Layout duplo: Celular & Desktop</p>
           </div>
-          <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+          <div className="p-3 rounded-xl bg-white/2 border border-white/4">
             <ShieldCheck className="w-4 h-4 text-cyan-400 mx-auto mb-1.5" />
             <h4 className="text-xs font-semibold text-slate-200">Múltiplas Lojas</h4>
             <p className="text-[11px] text-slate-500 mt-0.5 font-mono">Consolide toda a rede em um clique</p>
@@ -185,13 +188,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </div>
       </div>
 
-      {/* Seção de Lojas Cadastradas na Rede (quando já existem lojas) */}
+      {/* Seção de Lojas Cadastradas */}
       {stores && stores.length > 0 && (
-        <div className="mt-8 relative bg-white/[0.02] border border-white/10 backdrop-blur-md shadow-2xl rounded-2xl p-6 sm:p-7 overflow-hidden">
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.06]">
+        <div className="mt-8 relative bg-[#090A0F]/60 border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-2xl p-6 sm:p-7 overflow-hidden">
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/6">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
-                <StoreIcon className="w-3.5 h-3.5" />
+              <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center p-1.5 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+                 <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white tracking-tight">

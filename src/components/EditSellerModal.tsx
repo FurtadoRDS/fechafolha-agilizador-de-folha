@@ -78,16 +78,16 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative rounded-2xl bg-[#0D0F17] shadow-2xl border border-white/10 w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Top ambient highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/6 bg-white/2">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <UserCheck className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
+              <h3 className="text-base font-bold bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
                 Editar Funcionário
               </h3>
               <p className="text-xs text-slate-400 font-mono">
@@ -98,7 +98,7 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/6 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -228,7 +228,7 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
           </div>
 
           {/* Result Preview */}
-          <div className="p-3.5 bg-white/[0.02] border border-white/10 rounded-xl flex items-center justify-between text-xs font-sans tabular-nums shadow-inner">
+          <div className="p-3.5 bg-white/2 border border-white/10 rounded-xl flex items-center justify-between text-xs font-sans tabular-nums shadow-inner">
             <div className="flex items-center gap-1.5 text-slate-400 font-sans">
               <Calculator className="w-4 h-4 text-emerald-400" />
               <span>
@@ -246,7 +246,7 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.06]">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/6">
             <button
               type="button"
               onClick={onClose}
@@ -256,7 +256,7 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-medium rounded-lg px-6 py-2.5 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer font-sans"
+              className="flex items-center gap-2 bg-linear-to-r from-emerald-500 to-emerald-400 text-white font-medium rounded-lg px-6 py-2.5 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer font-sans"
             >
               {isSavedFeedback ? (
                 <>

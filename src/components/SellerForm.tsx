@@ -85,13 +85,13 @@ export const SellerForm: React.FC<SellerFormProps> = ({
 
   return (
     <div className="relative rounded-2xl bg-[#12141C] border border-white/10 p-6 mb-6 shadow-xl transition-all duration-300">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-white/[0.06]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-white/6">
         <div>
           <h2 className="text-base font-bold flex items-center gap-2 font-sans">
             <div className="w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <UserPlus className="w-3.5 h-3.5" />
             </div>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer font-bold font-sans">
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer font-bold font-sans">
               Lançar Funcionário / Fechamento de Vendas
             </span>
           </h2>
@@ -102,7 +102,7 @@ export const SellerForm: React.FC<SellerFormProps> = ({
 
         {/* Live Calculation Badge */}
         {(parsedSales > 0 || parsedBase > 0 || calculatedCommission > 0) && (
-          <div className="flex items-center gap-2.5 text-xs bg-white/[0.03] border border-white/[0.08] rounded-xl px-3.5 py-1.5 font-sans tabular-nums shadow-sm animate-in fade-in duration-300">
+          <div className="flex items-center gap-2.5 text-xs bg-white/3 border border-white/8 rounded-xl px-3.5 py-1.5 font-sans tabular-nums shadow-sm animate-in fade-in duration-300">
             <Calculator className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="text-slate-400 font-sans">
               Comissão:{' '}
@@ -254,7 +254,7 @@ export const SellerForm: React.FC<SellerFormProps> = ({
               <span>+ Adicionar Observação deste Vendedor</span>
             </button>
           ) : (
-            <div className="bg-white/[0.02] border border-white/10 rounded-xl p-3.5 space-y-2">
+            <div className="bg-white/2 border border-white/10 rounded-xl p-3.5 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs uppercase tracking-wider font-semibold text-slate-400 flex items-center gap-1.5 font-sans">
                   <FileText className="w-3.5 h-3.5 text-emerald-400" />
@@ -293,7 +293,7 @@ export const SellerForm: React.FC<SellerFormProps> = ({
         </div>
 
         {/* Action Button & Column Toggle Indicator */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/6">
           <div className="flex items-center gap-2">
             {onToggleNotesColumn && (
               <label className="flex items-center gap-2.5 text-xs bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg border border-white/10 px-3.5 py-2 transition-colors cursor-pointer select-none font-sans">
@@ -310,7 +310,7 @@ export const SellerForm: React.FC<SellerFormProps> = ({
                   className={`text-[10px] px-2 py-0.5 rounded-md font-sans font-bold uppercase tracking-wider ${
                     isNotesColumnEnabled
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-white/[0.05] text-slate-400 border border-white/[0.08]'
+                      : 'bg-white/5 text-slate-400 border border-white/8'
                   }`}
                 >
                   {isNotesColumnEnabled ? 'Ativada' : 'Desativada'}
@@ -321,7 +321,7 @@ export const SellerForm: React.FC<SellerFormProps> = ({
 
           <button
             type="submit"
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-medium rounded-lg px-6 py-2.5 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer font-sans"
+            className="flex items-center justify-center gap-2 bg-linear-to-r from-emerald-500 to-emerald-400 text-white font-medium rounded-lg px-6 py-2.5 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer font-sans"
           >
             {isSuccessAnimated ? (
               <>

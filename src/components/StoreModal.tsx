@@ -61,16 +61,16 @@ export const StoreModal: React.FC<StoreModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div className="relative rounded-2xl bg-[#0D0F17] shadow-2xl border border-white/10 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Top ambient highlight */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/[0.06] bg-white/[0.02]">
+        <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/6 bg-white/2">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <StoreIcon className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
+              <h3 className="text-base font-bold bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
                 {storeToEdit ? 'Configurações da Loja' : 'Cadastrar Nova Loja'}
               </h3>
               <p className="text-xs text-slate-400 font-mono">
@@ -81,7 +81,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/6 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -110,7 +110,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                 if (error) setError('');
               }}
               placeholder="Ex: Matriz Centro, Loja Shopping, Filial 1..."
-              className="w-full px-3.5 py-2.5 text-sm bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+              className="w-full px-3.5 py-2.5 text-sm bg-white/3 hover:bg-white/5 border border-white/8 hover:border-white/14 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
             />
           </div>
 
@@ -128,7 +128,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                 value={totalSales}
                 onChange={(e) => setTotalSales(e.target.value)}
                 placeholder="0,00"
-                className="w-full pl-10 pr-3.5 py-2.5 text-sm font-mono tabular-nums bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+                className="w-full pl-10 pr-3.5 py-2.5 text-sm font-mono tabular-nums bg-white/3 hover:bg-white/5 border border-white/8 hover:border-white/14 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
               />
             </div>
             <p className="text-[11px] text-slate-400 font-mono mt-1">
@@ -145,12 +145,12 @@ export const StoreModal: React.FC<StoreModalProps> = ({
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
               placeholder="Ex: Outubro / 2026"
-              className="w-full px-3.5 py-2.5 text-sm bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.14] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+              className="w-full px-3.5 py-2.5 text-sm bg-white/3 hover:bg-white/5 border border-white/8 hover:border-white/14 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
             />
           </div>
 
           {storeToEdit && onDelete && (
-            <div className="pt-2 border-t border-white/[0.06]">
+            <div className="pt-2 border-t border-white/6">
               {!showDeleteConfirm ? (
                 <button
                   type="button"
@@ -178,7 +178,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="px-3 py-1.5 bg-white/[0.05] text-slate-300 hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                      className="px-3 py-1.5 bg-white/5 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer"
                     >
                       Cancelar
                     </button>
@@ -188,11 +188,11 @@ export const StoreModal: React.FC<StoreModalProps> = ({
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.06]">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl transition-all cursor-pointer"
+              className="px-4 py-2 text-xs font-medium text-slate-300 hover:text-white bg-white/4 hover:bg-white/8 border border-white/8 rounded-xl transition-all cursor-pointer"
             >
               Cancelar
             </button>
@@ -201,7 +201,7 @@ export const StoreModal: React.FC<StoreModalProps> = ({
               className={`flex items-center gap-1.5 px-4.5 py-2 text-xs font-bold rounded-xl transition-all duration-300 cursor-pointer hover:-translate-y-0.5 ${
                 isSavedFeedback
                   ? 'bg-emerald-400 text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.4)]'
-                  : 'text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 hover:shadow-[0_0_20px_rgba(52,211,153,0.35)] active:translate-y-0'
+                  : 'text-slate-950 bg-linear-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 hover:shadow-[0_0_20px_rgba(52,211,153,0.35)] active:translate-y-0'
               }`}
             >
               {isSavedFeedback ? (

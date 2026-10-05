@@ -241,7 +241,7 @@ export default function App() {
         ) : activeStore ? (
           <div>
             {/* Store Navigation Bar (quando existem lojas na rede) */}
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-white/[0.08]">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-white/8">
               <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-full">
                 {/* Botão de Voltar para Tela Inicial / Criar Loja */}
                 <button
@@ -264,7 +264,7 @@ export default function App() {
                     onClick={() => handleSelectStore(s.id)}
                     className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap transition-all duration-300 cursor-pointer ${
                       s.id === activeStoreId
-                        ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:-translate-y-0.5'
+                        ? 'bg-linear-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 font-bold shadow-[0_0_15px_rgba(52,211,153,0.3)] hover:-translate-y-0.5'
                         : 'bg-white/5 border border-white/10 hover:bg-white/10 text-slate-300 transition-colors hover:-translate-y-0.5'
                     }`}
                   >
@@ -334,9 +334,9 @@ export default function App() {
 
             {/* Floating Action Banner (Luxury Glassmorphism with Linear Glow) */}
             {sellers.length > 0 && (
-              <div className="mt-8 p-6 rounded-2xl bg-[#0D0F17]/90 backdrop-blur-md text-white border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden transition-all duration-300 hover:border-white/15 animate-in fade-in slide-in-from-bottom-2 duration-700">
+              <div className="mt-8 p-6 rounded-2xl bg-[#0D0F17]/90 backdrop-blur-md text-white border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden transition-all duration-300 hover:border-white/15 animate-in fade-in slide-in-from-bottom-2">
                 {/* Top ambient highlight line */}
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+                <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
 
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   <div className="space-y-2">
@@ -344,7 +344,7 @@ export default function App() {
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
                         <FileSpreadsheet className="w-4 h-4" />
                       </div>
-                      <h3 className="text-base font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-300">
+                      <h3 className="text-base font-bold bg-clip-text text-transparent bg-linear-to-r from-white via-slate-100 to-slate-300">
                         Exportação de Fechamento para Excel (.xlsx)
                       </h3>
                     </div>
@@ -359,7 +359,7 @@ export default function App() {
                       <span className="text-xs font-mono uppercase text-slate-400">
                         Modo da Planilha:
                       </span>
-                      <div className="inline-flex items-center bg-white/[0.03] p-1 rounded-lg border border-white/10">
+                      <div className="inline-flex items-center bg-white/3 p-1 rounded-lg border border-white/10">
                         <button
                           type="button"
                           onClick={() => handleSetDeviceMode('mobile')}
@@ -395,7 +395,7 @@ export default function App() {
                       onClick={() => handleExportWithTactile('current-mobile', () => handleExportCurrent('mobile'))}
                       className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:translate-y-0 ${
                         deviceMode === 'mobile'
-                          ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:shadow-[0_0_25px_rgba(52,211,153,0.5)]'
+                          ? 'bg-linear-to-r from-emerald-400 to-teal-400 text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:shadow-[0_0_25px_rgba(52,211,153,0.5)]'
                           : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                       }`}
                       title="Exportar planilha desta loja com layout para celular"
@@ -413,8 +413,8 @@ export default function App() {
                       onClick={() => handleExportWithTactile('current-desktop', () => handleExportCurrent('desktop'))}
                       className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:translate-y-0 ${
                         deviceMode === 'desktop'
-                          ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]'
-                          : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/10 hover:border-white/20'
+                          ? 'bg-linear-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]'
+                          : 'bg-white/4 hover:bg-white/8 text-slate-300 border border-white/10 hover:border-white/20'
                       }`}
                       title="Exportar planilha desta loja com layout para computador"
                     >

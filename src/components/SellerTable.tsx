@@ -35,12 +35,12 @@ export const SellerTable: React.FC<SellerTableProps> = ({
   return (
     <div className="relative rounded-2xl bg-[#0D0F17]/80 backdrop-blur-md border border-white/10 shadow-2xl overflow-hidden transition-all duration-300">
       {/* Header Bar */}
-      <div className="p-5 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/[0.01]">
+      <div className="p-5 border-b border-white/6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/1">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
             <Users className="w-3.5 h-3.5" />
           </div>
-          <h2 className="text-base font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
+          <h2 className="text-base font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-emerald-400 via-teal-200 to-cyan-400 animate-text-shimmer">
             Quadro de Funcionários & Comissões
           </h2>
           <span className="text-xs font-mono text-slate-400 tabular-nums">
@@ -57,7 +57,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
               className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer border ${
                 isNotesColumnEnabled
                   ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
-                  : 'bg-white/[0.03] border-white/[0.08] text-slate-400 hover:bg-white/[0.06] hover:text-white'
+                  : 'bg-white/3 border-white/8 text-slate-400 hover:bg-white/6 hover:text-white'
               }`}
               title={
                 isNotesColumnEnabled
@@ -71,7 +71,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
                 className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider ${
                   isNotesColumnEnabled
                     ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-white/[0.05] text-slate-500'
+                    : 'bg-white/5 text-slate-500'
                 }`}
               >
                 {isNotesColumnEnabled ? 'Ativa' : 'Oculta'}
@@ -88,7 +88,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar funcionário..."
-                className="w-full pl-8.5 pr-3 py-1.5 text-xs bg-white/[0.03] border border-white/[0.08] rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+                className="w-full pl-8.5 pr-3 py-1.5 text-xs bg-white/3 border border-white/8 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
               />
             </div>
           )}
@@ -112,12 +112,12 @@ export const SellerTable: React.FC<SellerTableProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-white/[0.02] text-xs font-sans font-semibold text-slate-400 uppercase tracking-wider">
+              <tr className="border-b border-white/8 bg-white/2 text-xs font-sans font-semibold text-slate-400 uppercase tracking-wider">
                 <th className="py-3 px-4">Nome do Funcionário</th>
                 <th className="py-3 px-4 text-right">Vendas (R$)</th>
                 <th className="py-3 px-4 text-right">Salário Base (R$)</th>
                 <th className="py-3 px-4 text-right">Comissão Calculada</th>
-                <th className="py-3 px-4 text-right bg-emerald-500/[0.04] text-emerald-300 font-bold border-l border-r border-emerald-500/10">
+                <th className="py-3 px-4 text-right bg-emerald-500/4 text-emerald-300 font-bold border-l border-r border-emerald-500/10">
                   Total a Receber (Base + Com.)
                 </th>
                 {isNotesColumnEnabled && (
@@ -126,11 +126,11 @@ export const SellerTable: React.FC<SellerTableProps> = ({
                 <th className="py-3 px-4 text-center w-24">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04] text-xs">
+            <tbody className="divide-y divide-white/4 text-xs">
               {filteredSellers.map((seller) => (
                 <tr
                   key={seller.id}
-                  className="hover:bg-white/[0.04] transition-colors duration-200 group"
+                  className="hover:bg-white/4 transition-colors duration-200 group"
                 >
                   {/* Nome */}
                   <td className="py-3.5 px-4 font-medium text-slate-200 group-hover:text-white transition-colors font-sans">
@@ -160,7 +160,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
                   </td>
 
                   {/* Salário Total */}
-                  <td className="py-3.5 px-4 text-right font-sans tabular-nums font-bold text-white bg-emerald-500/[0.03] border-l border-r border-emerald-500/10">
+                  <td className="py-3.5 px-4 text-right font-sans tabular-nums font-bold text-white bg-emerald-500/3 border-l border-r border-emerald-500/10">
                     <span className="text-emerald-300 font-bold text-sm">
                       {formatBRL(seller.totalSalary)}
                     </span>
@@ -215,7 +215,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
 
             {/* Linha de SOMA TOTAL da tabela */}
             <tfoot>
-              <tr className="border-t border-white/[0.1] bg-white/[0.03] font-semibold text-xs text-white">
+              <tr className="border-t border-white/10 bg-white/3 font-semibold text-xs text-white">
                 <td className="py-3.5 px-4 uppercase tracking-wider font-sans font-bold text-slate-300">
                   SOMA TOTAL ({sellers.length} {sellers.length === 1 ? 'func.' : 'func.'})
                 </td>
@@ -228,7 +228,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
                 <td className="py-3.5 px-4 text-right font-sans tabular-nums font-bold text-emerald-400">
                   {formatBRL(totalCommissions)}
                 </td>
-                <td className="py-3.5 px-4 text-right font-sans tabular-nums font-bold text-emerald-300 bg-emerald-500/[0.08] border-l border-r border-emerald-500/20">
+                <td className="py-3.5 px-4 text-right font-sans tabular-nums font-bold text-emerald-300 bg-emerald-500/8 border-l border-r border-emerald-500/20">
                   <span className="text-base font-bold text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] font-sans">
                     {formatBRL(grandTotalSalary)}
                   </span>
@@ -246,7 +246,7 @@ export const SellerTable: React.FC<SellerTableProps> = ({
       {/* Delete Confirmation Dialog */}
       {sellerToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-[#0D0F17] rounded-2xl shadow-2xl border border-white/[0.12] w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95 duration-200">
+          <div className="bg-[#0D0F17] rounded-2xl shadow-2xl border border-white/12 w-full max-w-sm p-6 space-y-4 animate-in zoom-in-95 duration-200">
             <div className="flex items-start gap-3.5">
               <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
                 <AlertCircle className="w-5 h-5" />
@@ -261,11 +261,11 @@ export const SellerTable: React.FC<SellerTableProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.06]">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/6">
               <button
                 type="button"
                 onClick={() => setSellerToDelete(null)}
-                className="px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl transition-all cursor-pointer"
+                className="px-3.5 py-2 text-xs font-medium text-slate-300 hover:text-white bg-white/4 hover:bg-white/8 border border-white/8 rounded-xl transition-all cursor-pointer"
               >
                 Cancelar
               </button>

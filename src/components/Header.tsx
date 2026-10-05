@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#090A0F]/70 backdrop-blur-xl border-b border-white/[0.08] transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+    <header className="sticky top-0 z-40 bg-[#090A0F]/70 backdrop-blur-xl border-b border-white/8 transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
               title="Ir para o Início"
               className="flex items-center gap-3 group cursor-pointer text-left focus:outline-none"
             >
-              <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-center text-emerald-400 shadow-sm group-hover:bg-emerald-500/10 group-hover:border-emerald-500/30 transition-all duration-300">
+              <div className="w-8 h-8 rounded-lg bg-white/3 border border-white/10 flex items-center justify-center text-emerald-400 shadow-sm group-hover:bg-emerald-500/10 group-hover:border-emerald-500/30 transition-all duration-300">
                 <StoreIcon className="w-4 h-4" />
               </div>
               <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Zona 2: Contexto da Loja Atual (Centro) */}
           {!isHomeScreen && stores.length > 0 && activeStore && (
             <div className="hidden lg:flex items-center justify-center flex-1">
-              <div className="flex items-center bg-white/[0.03] border border-white/10 rounded-xl p-1 shadow-sm">
+              <div className="flex items-center bg-white/3 border border-white/10 rounded-xl p-1 shadow-sm">
                 <div className="relative">
                   <select
                     value={activeStoreId || ''}
@@ -144,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Zona 3: Ações Globais e Exportação (Direita) */}
           <div className="flex items-center gap-3 shrink-0">
             {/* Seletor de Modo Celular/Desktop */}
-            <div className="flex items-center bg-white/[0.03] p-0.5 rounded-lg border border-white/10">
+            <div className="flex items-center bg-white/3 p-0.5 rounded-lg border border-white/10">
               <button
                 type="button"
                 onClick={() => onChangeDeviceMode('mobile')}
