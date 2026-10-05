@@ -1,85 +1,68 @@
-# 📊 FechaFolha PRO
+<div align="center">
+  <img src="./public/favicon.png" alt="FechaFolha PRO Logo" width="120" />
 
-> **Plataforma premium para fechamento de salários, cálculo instantâneo de comissões e exportação inteligente de planilhas.**
+  # 🍃 FechaFolha PRO
 
-O **FechaFolha PRO** é uma aplicação web *front-end* desenvolvida em React para gerenciar o fechamento de folha de pagamento de redes de lojas (com foco no varejo, como óticas, roupas, etc.). O sistema opera **100% localmente no navegador** do usuário, garantindo privacidade absoluta dos dados financeiros, velocidade instantânea e dispensando a necessidade de servidores ou bancos de dados em nuvem.
+  **Sistema Premium de Gestão e Fechamento de Salários e Comissões**
+
+  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
+
+  <p align="center">
+    Plataforma de alta precisão para o cálculo instantâneo de comissões, gestão de múltiplas filiais e exportação inteligente de relatórios financeiros (Excel).
+  </p>
+</div>
+
+<br/>
+
+## 📖 Sobre o Projeto
+
+O **FechaFolha PRO** nasceu da necessidade de modernizar e simplificar o fechamento financeiro no fim do mês para redes de lojas (como óticas e retalho). A aplicação substitui as planilhas manuais confusas por uma interface fluida, baseada no conceito visual de *Liquid Glass* (Glassmorphism escuro), oferecendo cálculos automáticos em tempo real e mantendo todos os dados seguros no próprio navegador do utilizador.
+
+A *killer feature* da aplicação é o seu motor de exportação Excel: capaz de gerar ficheiros formatados não apenas para o computador, mas **estruturalmente desenhados para ecrãs de telemóvel**, facilitando o envio dos fechamentos via WhatsApp para gerentes e funcionários.
+
+---
 
 ## ✨ Principais Funcionalidades
 
-- 🏢 **Gestão Multi-Lojas:** Cadastre matriz e filiais, alternando facilmente entre os fechamentos de cada unidade.
-- 👥 **Controle de Funcionários e Vendas:** Lançamento rápido do total de vendas de cada vendedor.
-- 🧮 **Cálculo Automático de Comissões:** Suporte a comissionamento por **porcentagem (%)** sobre vendas ou **valor fixo (R$)**.
-- 📱 **Exportação Inteligente para Excel (.xlsx):**
-  - **Modo Celular (Mobile/WhatsApp):** Gera uma planilha compacta, verticalizada e com fontes maiores, perfeita para o dono da loja ou gerente visualizar e aprovar direto na tela do smartphone sem precisar "rolar para os lados".
-  - **Modo Desktop:** Layout executivo tradicional com todas as colunas expandidas para visualização em monitores.
-- 👁️ **Visão Consolidada da Rede:** Um dashboard gerencial que soma as vendas, salários base e comissões de *todas* as lojas cadastradas, exibindo o custo total da folha no mês.
-- 📝 **Coluna de Observações Dinâmica:** Habilite ou desabilite uma coluna de anotações (ex: "Férias", "Meta Batida") que reflete instantaneamente na interface e no arquivo Excel gerado.
-
-## 🎨 UI/UX e Design System
-
-O projeto foi construído fugindo do padrão tradicional de "sistemas administrativos cinzas", adotando uma estética inspirada em fintechs de alto padrão (como Stripe e Linear.app):
-
-- **Dark Mode Sofisticado:** Paleta baseada em tons de `Slate` e `Midnight Blue` (`#090A0F`), com acentos em `Emerald` e `Cyan`.
-- **Glassmorphism:** Uso intensivo de superfícies translúcidas (`backdrop-blur`) e bordas sutis para criar profundidade e hierarquia visual.
-- **Tipografia de Precisão:** Fontes limpas (`sans-serif`) com uso estrito da propriedade `tabular-nums` para alinhamento matemático perfeito das colunas financeiras (R$).
-- **Micro-interações:** Animações nativas com Tailwind (`animate-in`, `fade-in`, glows radiais) para feedback tátil ao salvar, editar ou excluir dados.
-
-## 🛠️ Tecnologias Utilizadas
-
-- **[React](https://reactjs.org/)** - Biblioteca principal para construção da interface.
-- **[TypeScript](https://www.typescriptlang.org/)** - Tipagem estática para maior segurança do código e autocompletes.
-- **[Tailwind CSS](https://tailwindcss.com/)** - Estilização utilitária para o design responsivo e efeitos avançados de UI.
-- **[Lucide React](https://lucide.dev/)** - Ícones vetoriais consistentes e de alta qualidade.
-- **Local Storage API** - Persistência de dados nativa do navegador (via custom hooks / Zustand).
-- **Vite** - Bundler e ambiente de desenvolvimento ultrarrápido.
-
-## 🚀 Como Executar o Projeto Localmente
-
-### Pré-requisitos
-Você precisará ter o [Node.js](https://nodejs.org/) instalado na sua máquina.
-
-### Passo a Passo
-
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/seu-usuario/fechafolha-pro.git
-   ```
-
-2. **Acesse a pasta do projeto:**
-   ```bash
-   cd fechafolha-pro
-   ```
-
-3. **Instale as dependências:**
-   ```bash
-   npm install
-   # ou, se preferir usar yarn/pnpm:
-   yarn install
-   ```
-
-4. **Inicie o servidor de desenvolvimento:**
-   ```bash
-   npm run dev
-   ```
-
-5. **Abra no navegador:**
-   O terminal exibirá a URL local (geralmente `http://localhost:5173`). Clique para abrir a aplicação.
-
-## 📁 Estrutura do Projeto (Destaques)
-
-- `src/App.tsx`: Ponto de entrada que gerencia as rotas visuais e os estados globais dos Modais.
-- `src/components/`:
-  - `Header.tsx`: Barra superior com seleção de lojas e botões de exportação master.
-  - `EmptyState.tsx`: Tela inicial elegante para criar a primeira loja com background *glow*.
-  - `SellerForm.tsx`: Formulário de inserção de dados com cálculos em tempo real (*live preview*).
-  - `SellerTable.tsx`: Quadro financeiro listando a equipe.
-  - `*Modal.tsx`: Interfaces flutuantes (Edição, Visão Consolidada, Exclusão).
-- `src/types/closing.ts`: Definições das interfaces TypeScript (`Store`, `Seller`, `ExportDeviceMode`).
-- `src/utils/formatters.ts`: Lógica de formatação monetária (BRL) e parsing de inputs.
-- `src/index.css`: Arquivo de base contendo diretivas do Tailwind e animações customizadas (Shimmer, FadeUp).
-
-## 🔒 Privacidade e Segurança
-Este aplicativo foi arquitetado no modelo *Client-Side Only*. Nenhum dado financeiro, nomes de lojas ou salários de funcionários trafegam pela rede ou são enviados para servidores externos. Tudo fica armazenado na memória cache (Local Storage) do dispositivo de onde o usuário está acessando.
+- **🏢 Gestão de Múltiplas Lojas:** Crie, edite e acompanhe o desempenho de várias filiais numa única interface. Consolidado geral de toda a rede de forma instantânea.
+- **👥 Controle de Funcionários:** Adicione vendedores registando o total vendido, salário base e a taxa de comissão (em % ou valor fixo R$).
+- **⚡ Cálculos em Tempo Real:** À medida que os dados são inseridos, o sistema calcula dinamicamente as comissões, salários totais e a percentagem de vendas da equipa face à loja.
+- **📱 Exportação Inteligente (Excel):** Exportação de planilhas formatadas e estilizadas.
+  - **Modo Celular:** Layout compacto com tipografia maior, focado em preencher a tela do smartphone na vertical (perfeito para partilha mobile).
+  - **Modo Desktop:** Layout expandido tradicional com todas as colunas visíveis.
+- **🔒 Segurança Local:** Arquitetura *Local-First*. Os dados financeiros sensíveis nunca saem da máquina, sendo guardados nativamente no `localStorage` do browser.
+- **🎨 UI/UX Premium:** Design moderno com efeitos translúcidos, paleta esmeralda/ciano e feedback tátil em todas as interações.
 
 ---
-Desenvolvido com 💚 e foco na experiência do usuário para simplificar a vida do varejo.
+
+## 💻 Tecnologias e Bibliotecas
+
+A aplicação foi construída com um ecossistema moderno focado em performance e tipagem forte:
+
+| Tecnologia / Ferramenta | Propósito |
+| :--- | :--- |
+| **React 18** | Biblioteca base para construção das interfaces de utilizador. |
+| **TypeScript** | Tipagem estática para garantir a segurança dos cálculos financeiros (`types/closing.ts`). |
+| **Vite** | *Bundler* ultra-rápido para desenvolvimento e build. |
+| **Tailwind CSS** | Estilização utilitária usada para criar o efeito *Liquid Glass* e as classes arbitrárias de layout. |
+| **xlsx-js-style** | Motor responsável por injetar fórmulas nativas (`=SOMA()`) e formatação monetária nos ficheiros Excel exportados. |
+| **Lucide React** | Biblioteca de ícones SVG consistentes e minimalistas. |
+
+---
+
+## 🚀 Como Executar o Projeto
+
+Siga os passos abaixo para correr a aplicação localmente na sua máquina.
+
+### Pré-requisitos
+- [Node.js](https://nodejs.org/) instalado (versão 16 ou superior).
+- Git para clonar o repositório.
+
+### Instalação
+
+1. Clone o repositório:
+```bash
+git clone [https://github.com/seu-usuario/fechafolha-pro.git](https://github.com/seu-usuario/fechafolha-pro.git)
