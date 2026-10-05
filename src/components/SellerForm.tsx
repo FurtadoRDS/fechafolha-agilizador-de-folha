@@ -191,12 +191,26 @@ export const SellerForm: React.FC<SellerFormProps> = ({
 
           {/* 4. Comissão pelas Vendas (% ou R$) */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs uppercase tracking-wider font-semibold text-slate-400 block font-sans">
-                Comissão
-              </label>
-              
-              {/* Type Switcher */}
+            <label className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1.5 block font-sans">
+              Comissão
+            </label>
+
+            <div className="relative mb-2">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-sans text-slate-500">
+                {commissionType === 'percentage' ? '%' : 'R$'}
+              </span>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={commissionRate}
+                onChange={(e) => setCommissionRate(e.target.value)}
+                placeholder={commissionType === 'percentage' ? 'Ex: 2.5' : 'Ex: 500,00'}
+                className="w-full pl-10 pr-4 py-2.5 text-sm font-sans tabular-nums bg-black/30 border border-white/10 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
+              />
+            </div>
+
+            {/* Type Switcher (Movido para baixo da caixa de texto) */}
+            <div className="flex items-center justify-end">
               <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/10">
                 <button
                   type="button"
@@ -223,20 +237,6 @@ export const SellerForm: React.FC<SellerFormProps> = ({
                   R$
                 </button>
               </div>
-            </div>
-
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-sans text-slate-500">
-                {commissionType === 'percentage' ? '%' : 'R$'}
-              </span>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={commissionRate}
-                onChange={(e) => setCommissionRate(e.target.value)}
-                placeholder={commissionType === 'percentage' ? 'Ex: 2.5' : 'Ex: 500,00'}
-                className="w-full pl-10 pr-4 py-2.5 text-sm font-sans tabular-nums bg-black/30 border border-white/10 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
-              />
             </div>
           </div>
 
@@ -340,4 +340,3 @@ export const SellerForm: React.FC<SellerFormProps> = ({
     </div>
   );
 };
-

@@ -168,10 +168,25 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs uppercase tracking-wider font-semibold text-slate-400 block font-sans">
-                Tipo de Comissão
-              </label>
+            <label className="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-1.5 block font-sans">
+              Comissão
+            </label>
+
+            <div className="relative mb-2">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-sans text-slate-500">
+                {commissionType === 'percentage' ? '%' : 'R$'}
+              </span>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={commissionRate}
+                onChange={(e) => setCommissionRate(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 text-sm font-sans tabular-nums bg-black/30 border border-white/10 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
+              />
+            </div>
+
+            {/* Type Switcher */}
+            <div className="flex items-center justify-end">
               <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/10">
                 <button
                   type="button"
@@ -196,19 +211,6 @@ export const EditSellerModal: React.FC<EditSellerModalProps> = ({
                   R$ Fixo
                 </button>
               </div>
-            </div>
-
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-sans text-slate-500">
-                {commissionType === 'percentage' ? '%' : 'R$'}
-              </span>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={commissionRate}
-                onChange={(e) => setCommissionRate(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm font-sans tabular-nums bg-black/30 border border-white/10 rounded-lg text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
-              />
             </div>
           </div>
 
