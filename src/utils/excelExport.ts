@@ -3,16 +3,16 @@ import { Store, ExportDeviceMode } from '../types/closing';
 
 // Paleta baseada na estilização da referência
 const PALETTE = {
-  navyDark: '0B192C',      // Fundo escuro do banner principal
-  navyHeader: '1E293B',    // Fundo dos cabeçalhos das tabelas
-  navyLight: 'F1F5F9',     // Fundo suave de linhas de destaque / subtotais
+  navyDark: '0B192C',      
+  navyHeader: '1E293B',    
+  navyLight: 'F1F5F9',     
   borderGray: 'CBD5E1',
   borderLight: 'E2E8F0',
   textWhite: 'FFFFFF',
   textDark: '0F172A',
   textMuted: '475569',
-  greenBold: '15803D',     // Verde para comissões e totais finais
-  greenBg: 'F0FDF4',       // Fundo verde claro para total a pagar
+  greenBold: '15803D',     
+  greenBg: 'F0FDF4',       
   zebraRow: 'F8FAFC',
 };
 
@@ -29,13 +29,6 @@ const BORDER_DOUBLE_BOTTOM = {
   left: { style: 'thin', color: { rgb: PALETTE.borderGray } },
   right: { style: 'thin', color: { rgb: PALETTE.borderGray } },
 };
-
-function formatCurrencyVal(val: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(val || 0);
-}
 
 function sanitizeSheetName(name: string, index: number, existingNames: Set<string>): string {
   let clean = name.replace(/[:\\/?*\[\]]/g, '').trim();
@@ -56,34 +49,42 @@ function sanitizeSheetName(name: string, index: number, existingNames: Set<strin
  * Cria a planilha da loja individual com foco em:
  * 1. Vendas separadas por funcionários
  * 2. Salários base e Comissões
- * 3. Quanto cada um vai receber no mês (Salário Base + Comissão)
- * 4. Coluna de Observação adicionada dinamicamente quando habilitada
- * 5. Linha de SOMA TOTAL dos salários no rodapé
+ * 3. Fórmulas NATIVAS EXCEL para cálculos automáticos na planilha
  */
 function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
   const ws: XLSX.WorkSheet = {};
   let currentRow = 0;
 
-  // Verifica se a coluna de observação está habilitada nesta loja
   const includeNotes = Boolean(store.includeNotes);
   const numCols = includeNotes ? 7 : 6;
   const valueCol = numCols - 1;
 
   const sellers = store.sellers || [];
 
-  // Cálculos de Funcionários e Salários
   const grossTeamSales = sellers.reduce((sum, s) => sum + (s.salesAmount || 0), 0);
   const totalBaseSalaries = sellers.reduce((sum, s) => sum + (s.baseSalary || 0), 0);
   const totalCommissions = sellers.reduce((sum, s) => sum + (s.commissionAmount || 0), 0);
-  const totalPayrollToPay = sellers.reduce((sum, s) => sum + (s.totalSalary || 0), 0); // Salário Base + Comissões
+  const totalPayrollToPay = sellers.reduce((sum, s) => sum + (s.totalSalary || 0), 0); 
 
-  const setCell = (r: number, c: number, v: string | number, style: any = {}) => {
+  // Linhas onde os dados dos vendedores vão começar e terminar (1-index base para Fórmulas do Excel)
+  const sellerStartRow = 7;
+  const sellerEndRow = sellers.length > 0 ? 6 + sellers.length : 7;
+
+  // Novo setCell suportando formatação nativa de moeda e fórmulas Excel
+  const setCell = (r: number, c: number, v: string | number, style: any = {}, opts?: { isCurrency?: boolean, formula?: string }) => {
     const cellRef = XLSX.utils.encode_cell({ r, c });
-    ws[cellRef] = {
-      v: v ?? '',
-      t: typeof v === 'number' ? 'n' : 's',
+    const cell: XLSX.CellObject = {
+      v: v ?? '', 
+      t: typeof v === 'number' || opts?.formula ? 'n' : 's',
       s: style,
     };
+    if (opts?.formula) {
+      cell.f = opts.formula;
+    }
+    if (opts?.isCurrency) {
+      cell.z = '"R$ "#,##0.00'; // Formato Moeda Nativo do Excel
+    }
+    ws[cellRef] = cell;
   };
 
   const setMergedRow = (r: number, startCol: number, endCol: number, val: string, style: any) => {
@@ -95,7 +96,7 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
   const merges: XLSX.Range[] = [];
 
   // ==========================================
-  // LINHA 1: BANNER PRINCIPAL (Fundo Navy Escuro, Texto Branco Centralizado)
+  // LINHA 1: BANNER PRINCIPAL
   // ==========================================
   const titleText = `FECHAMENTO DE SALÁRIOS E VENDAS - ${store.name.toUpperCase()}`;
   setMergedRow(currentRow, 0, numCols - 1, titleText, {
@@ -107,7 +108,7 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
   currentRow++;
 
   // ==========================================
-  // LINHA 2: SUBTÍTULO COM PERÍODO
+  // LINHA 2: SUBTÍTULO
   // ==========================================
   const now = new Date();
   const dateStr = now.toLocaleDateString('pt-BR');
@@ -132,12 +133,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 1, formatCurrencyVal(store.totalSales), {
+  setCell(currentRow, 1, store.totalSales, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.navyDark } },
     fill: { fgColor: { rgb: 'FFFFFF' } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true });
 
   setCell(currentRow, 2, 'Total Salários Base:', {
     font: { name: 'Segoe UI', sz: 9, bold: true, color: { rgb: PALETTE.textDark } },
@@ -145,12 +146,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 3, formatCurrencyVal(totalBaseSalaries), {
+  setCell(currentRow, 3, totalBaseSalaries, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: 'FFFFFF' } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: sellers.length > 0 ? `SUM(C${sellerStartRow}:C${sellerEndRow})` : undefined });
 
   setCell(currentRow, 4, 'Total Comissões da Equipe:', {
     font: { name: 'Segoe UI', sz: 9, bold: true, color: { rgb: PALETTE.greenBold } },
@@ -158,12 +159,13 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 5, formatCurrencyVal(totalCommissions), {
+  setCell(currentRow, 5, totalCommissions, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: 'FFFFFF' } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: sellers.length > 0 ? `SUM(E${sellerStartRow}:E${sellerEndRow})` : undefined });
+  
   if (includeNotes) {
     setCell(currentRow, 6, '', { fill: { fgColor: { rgb: 'FFFFFF' } }, border: BORDER_THIN });
     merges.push({ s: { r: currentRow, c: 5 }, e: { r: currentRow, c: 6 } });
@@ -177,12 +179,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 1, formatCurrencyVal(grossTeamSales), {
+  setCell(currentRow, 1, grossTeamSales, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.navyDark } },
     fill: { fgColor: { rgb: 'FFFFFF' } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: sellers.length > 0 ? `SUM(B${sellerStartRow}:B${sellerEndRow})` : undefined });
 
   setCell(currentRow, 2, 'Equipe de Vendas:', {
     font: { name: 'Segoe UI', sz: 9, bold: true, color: { rgb: PALETTE.textDark } },
@@ -208,7 +210,7 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
       right: { style: 'thin', color: { rgb: PALETTE.greenBold } },
     },
   });
-  setCell(currentRow, 5, formatCurrencyVal(totalPayrollToPay), {
+  setCell(currentRow, 5, totalPayrollToPay, {
     font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.greenBg } },
     alignment: { horizontal: 'right', vertical: 'center' },
@@ -218,7 +220,8 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
       left: { style: 'thin', color: { rgb: PALETTE.greenBold } },
       right: { style: 'thin', color: { rgb: PALETTE.greenBold } },
     },
-  });
+  }, { isCurrency: true, formula: sellers.length > 0 ? `SUM(F${sellerStartRow}:F${sellerEndRow})` : undefined });
+  
   if (includeNotes) {
     setCell(currentRow, 6, '', {
       fill: { fgColor: { rgb: PALETTE.greenBg } },
@@ -237,7 +240,7 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
   currentRow++;
 
   // ==========================================
-  // TABELA PRINCIPAL: VENDAS, SALÁRIOS E COMISSÕES POR FUNCIONÁRIO
+  // TABELA PRINCIPAL
   // ==========================================
   const sellerHeaders = [
     'Nome do Funcionário',
@@ -278,10 +281,8 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
   } else {
     sellers.forEach((seller, idx) => {
       const bg = idx % 2 === 0 ? 'FFFFFF' : PALETTE.zebraRow;
-      const rateLabel =
-        seller.commissionType === 'percentage'
-          ? `${seller.commissionRate}%`
-          : 'Fixo R$';
+      const rateLabel = seller.commissionType === 'percentage' ? `${seller.commissionRate}%` : 'Fixo R$';
+      const rowNum = currentRow + 1; // Para as fórmulas (1-indexed)
 
       // 0. Nome
       setCell(currentRow, 0, seller.name, {
@@ -292,20 +293,20 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
       });
 
       // 1. Vendas
-      setCell(currentRow, 1, formatCurrencyVal(seller.salesAmount), {
+      setCell(currentRow, 1, seller.salesAmount || 0, {
         font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textDark } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true });
 
       // 2. Salário Base
-      setCell(currentRow, 2, formatCurrencyVal(seller.baseSalary), {
+      setCell(currentRow, 2, seller.baseSalary || 0, {
         font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textDark } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true });
 
       // 3. Taxa Comissão
       setCell(currentRow, 3, rateLabel, {
@@ -316,22 +317,22 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
       });
 
       // 4. Valor Comissão
-      setCell(currentRow, 4, formatCurrencyVal(seller.commissionAmount), {
+      setCell(currentRow, 4, seller.commissionAmount || 0, {
         font: { name: 'Segoe UI', sz: 9.5, bold: true, color: { rgb: PALETTE.greenBold } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true });
 
-      // 5. Total a Receber no Mês (Salário Base + Comissão)
-      setCell(currentRow, 5, formatCurrencyVal(seller.totalSalary), {
+      // 5. Total a Receber no Mês (Fórmula Excel: Base + Comissão)
+      setCell(currentRow, 5, seller.totalSalary || 0, {
         font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true, formula: `C${rowNum}+E${rowNum}` });
 
-      // 6. Observação (quando habilitada)
+      // 6. Observação
       if (includeNotes) {
         setCell(currentRow, 6, seller.notes || '-', {
           font: { name: 'Segoe UI', sz: 9, italic: !!seller.notes, color: { rgb: seller.notes ? PALETTE.textDark : PALETTE.textMuted } },
@@ -352,36 +353,41 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 1, formatCurrencyVal(grossTeamSales), {
+  setCell(currentRow, 1, grossTeamSales, {
     font: { name: 'Segoe UI', sz: 9.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
-  setCell(currentRow, 2, formatCurrencyVal(totalBaseSalaries), {
+  }, { isCurrency: true, formula: `SUM(B${sellerStartRow}:B${sellerEndRow})` });
+  
+  setCell(currentRow, 2, totalBaseSalaries, {
     font: { name: 'Segoe UI', sz: 9.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: `SUM(C${sellerStartRow}:C${sellerEndRow})` });
+  
   setCell(currentRow, 3, '-', {
     font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textMuted } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'center', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 4, formatCurrencyVal(totalCommissions), {
+  
+  setCell(currentRow, 4, totalCommissions, {
     font: { name: 'Segoe UI', sz: 9.5, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
-  setCell(currentRow, 5, formatCurrencyVal(totalPayrollToPay), {
+  }, { isCurrency: true, formula: `SUM(E${sellerStartRow}:E${sellerEndRow})` });
+  
+  setCell(currentRow, 5, totalPayrollToPay, {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: `SUM(F${sellerStartRow}:F${sellerEndRow})` });
+  
   if (includeNotes) {
     setCell(currentRow, 6, '-', {
       font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textMuted } },
@@ -391,9 +397,7 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     });
   }
   currentRow++;
-
-  // Linha em branco
-  currentRow++;
+  currentRow++; // Linha em branco
 
   // ==========================================
   // QUADRO DE FECHAMENTO FINAL NO RODAPÉ
@@ -407,12 +411,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMergeEnd } });
-  setCell(currentRow, valueCol, formatCurrencyVal(store.totalSales), {
+  setCell(currentRow, valueCol, store.totalSales, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true });
   currentRow++;
 
   setMergedRow(currentRow, 0, summaryMergeEnd, 'TOTAL DE VENDAS REALIZADAS PELA EQUIPE', {
@@ -422,12 +426,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMergeEnd } });
-  setCell(currentRow, valueCol, formatCurrencyVal(grossTeamSales), {
+  setCell(currentRow, valueCol, grossTeamSales, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: `SUM(B${sellerStartRow}:B${sellerEndRow})` });
   currentRow++;
 
   setMergedRow(currentRow, 0, summaryMergeEnd, 'TOTAL DE SALÁRIOS BASE A PAGAR', {
@@ -437,12 +441,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMergeEnd } });
-  setCell(currentRow, valueCol, formatCurrencyVal(totalBaseSalaries), {
+  setCell(currentRow, valueCol, totalBaseSalaries, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: `SUM(C${sellerStartRow}:C${sellerEndRow})` });
   currentRow++;
 
   setMergedRow(currentRow, 0, summaryMergeEnd, 'TOTAL DE COMISSÕES DE VENDAS A PAGAR', {
@@ -452,12 +456,12 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMergeEnd } });
-  setCell(currentRow, valueCol, formatCurrencyVal(totalCommissions), {
+  setCell(currentRow, valueCol, totalCommissions, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: `SUM(E${sellerStartRow}:E${sellerEndRow})` });
   currentRow++;
 
   setMergedRow(currentRow, 0, summaryMergeEnd, '(=) TOTAL GERAL A PAGAR NESTE MÊS (Salários Base + Comissões)', {
@@ -467,44 +471,26 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_DOUBLE_BOTTOM,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMergeEnd } });
-  setCell(currentRow, valueCol, formatCurrencyVal(totalPayrollToPay), {
+  setCell(currentRow, valueCol, totalPayrollToPay, {
     font: { name: 'Segoe UI', sz: 12, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.greenBg } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
+  }, { isCurrency: true, formula: `SUM(F${sellerStartRow}:F${sellerEndRow})` });
   currentRow++;
 
-  // Definir dimensões
   ws['!ref'] = XLSX.utils.encode_range({
     s: { r: 0, c: 0 },
     e: { r: currentRow - 1, c: numCols - 1 },
   });
   ws['!merges'] = merges;
 
-  // Larguras adequadas
   if (includeNotes) {
-    ws['!cols'] = [
-      { wch: 30 }, // Nome do Funcionário
-      { wch: 24 }, // Vendas do Funcionário
-      { wch: 20 }, // Salário Base
-      { wch: 18 }, // Comissão (%)
-      { wch: 22 }, // Valor da Comissão
-      { wch: 26 }, // TOTAL A RECEBER NO MÊS
-      { wch: 32 }, // Observação
-    ];
+    ws['!cols'] = [{ wch: 30 }, { wch: 24 }, { wch: 20 }, { wch: 18 }, { wch: 22 }, { wch: 26 }, { wch: 32 }];
   } else {
-    ws['!cols'] = [
-      { wch: 34 }, // Nome do Funcionário
-      { wch: 25 }, // Vendas do Funcionário
-      { wch: 22 }, // Salário Base
-      { wch: 18 }, // Comissão (%)
-      { wch: 24 }, // Valor da Comissão
-      { wch: 30 }, // TOTAL A RECEBER NO MÊS
-    ];
+    ws['!cols'] = [{ wch: 34 }, { wch: 25 }, { wch: 22 }, { wch: 18 }, { wch: 24 }, { wch: 30 }];
   }
 
-  // Altura das linhas de destaque
   const rowHeights: XLSX.RowInfo[] = [];
   rowHeights[0] = { hpt: 32 };
   rowHeights[1] = { hpt: 20 };
@@ -512,12 +498,7 @@ function createStoreStyledSheet(store: Store): XLSX.WorkSheet {
   rowHeights[3] = { hpt: 22 };
   ws['!rows'] = rowHeights;
 
-  (ws as any)._meta = {
-    numCols,
-    rowCount: currentRow,
-    isMobile: false,
-  };
-
+  (ws as any)._meta = { numCols, rowCount: currentRow, isMobile: false };
   return ws;
 }
 
@@ -529,13 +510,19 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
   let currentRow = 0;
   const numCols = 7;
 
-  const setCell = (r: number, c: number, v: string | number, style: any = {}) => {
+  const storeStartRow = 5;
+  const storeEndRow = stores.length > 0 ? 4 + stores.length : 5;
+
+  const setCell = (r: number, c: number, v: string | number, style: any = {}, opts?: { isCurrency?: boolean, formula?: string }) => {
     const cellRef = XLSX.utils.encode_cell({ r, c });
-    ws[cellRef] = {
-      v: v ?? '',
-      t: typeof v === 'number' ? 'n' : 's',
+    const cell: XLSX.CellObject = {
+      v: v ?? '', 
+      t: typeof v === 'number' || opts?.formula ? 'n' : 's',
       s: style,
     };
+    if (opts?.formula) cell.f = opts.formula;
+    if (opts?.isCurrency) cell.z = '"R$ "#,##0.00';
+    ws[cellRef] = cell;
   };
 
   const setMergedRow = (r: number, startCol: number, endCol: number, val: string, style: any) => {
@@ -546,7 +533,6 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
 
   const merges: XLSX.Range[] = [];
 
-  // Banner
   setMergedRow(currentRow, 0, numCols - 1, 'RESUMO CONSOLIDADO DE VENDAS E SALÁRIOS DA REDE DE LOJAS', {
     font: { name: 'Segoe UI', sz: 14, bold: true, color: { rgb: PALETTE.textWhite } },
     fill: { fgColor: { rgb: PALETTE.navyDark } },
@@ -555,7 +541,6 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: numCols - 1 } });
   currentRow++;
 
-  // Subheader
   const now = new Date();
   const subTitle = `Emissão: ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')} | Total de Lojas da Rede: ${stores.length}`;
   setMergedRow(currentRow, 0, numCols - 1, subTitle, {
@@ -568,7 +553,6 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
   currentRow++;
   currentRow++;
 
-  // Headers
   const headers = [
     'Loja / Unidade',
     'Vendas da Loja',
@@ -593,15 +577,12 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
   });
   currentRow++;
 
-  let netStoreSales = 0;
-  let netGrossTeamSales = 0;
-  let netBaseAll = 0;
-  let netCommAll = 0;
-  let netPayrollAll = 0;
+  let netStoreSales = 0, netGrossTeamSales = 0, netBaseAll = 0, netCommAll = 0, netPayrollAll = 0;
 
   stores.forEach((store, idx) => {
     const bg = idx % 2 === 0 ? 'FFFFFF' : PALETTE.zebraRow;
     const sellers = store.sellers || [];
+    const rowNum = currentRow + 1;
 
     const grossSales = sellers.reduce((sum, s) => sum + (s.salesAmount || 0), 0);
     const baseSalaries = sellers.reduce((sum, s) => sum + (s.baseSalary || 0), 0);
@@ -620,42 +601,47 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
       alignment: { horizontal: 'left', vertical: 'center' },
       border: BORDER_THIN,
     });
-    setCell(currentRow, 1, formatCurrencyVal(store.totalSales), {
+    setCell(currentRow, 1, store.totalSales || 0, {
       font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textDark } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
-    setCell(currentRow, 2, formatCurrencyVal(grossSales), {
+    }, { isCurrency: true });
+    
+    setCell(currentRow, 2, grossSales, {
       font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textDark } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
+    }, { isCurrency: true });
+    
     setCell(currentRow, 3, sellers.length, {
       font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textDark } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'center', vertical: 'center' },
       border: BORDER_THIN,
     });
-    setCell(currentRow, 4, formatCurrencyVal(baseSalaries), {
+    
+    setCell(currentRow, 4, baseSalaries, {
       font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textDark } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
-    setCell(currentRow, 5, formatCurrencyVal(commissions), {
+    }, { isCurrency: true });
+    
+    setCell(currentRow, 5, commissions, {
       font: { name: 'Segoe UI', sz: 9.5, bold: true, color: { rgb: PALETTE.greenBold } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
-    setCell(currentRow, 6, formatCurrencyVal(storePayroll), {
+    }, { isCurrency: true });
+    
+    setCell(currentRow, 6, storePayroll, {
       font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.greenBold } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
+    }, { isCurrency: true, formula: `E${rowNum}+F${rowNum}` });
     currentRow++;
   });
 
@@ -666,75 +652,58 @@ function createConsolidatedStyledSheet(stores: Store[]): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
   });
-  setCell(currentRow, 1, formatCurrencyVal(netStoreSales), {
+  setCell(currentRow, 1, netStoreSales, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
-  setCell(currentRow, 2, formatCurrencyVal(netGrossTeamSales), {
+  }, { isCurrency: true, formula: `SUM(B${storeStartRow}:B${storeEndRow})` });
+  
+  setCell(currentRow, 2, netGrossTeamSales, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
+  }, { isCurrency: true, formula: `SUM(C${storeStartRow}:C${storeEndRow})` });
+  
   setCell(currentRow, 3, stores.reduce((acc, s) => acc + (s.sellers || []).length, 0), {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'center', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
-  setCell(currentRow, 4, formatCurrencyVal(netBaseAll), {
+  }, { formula: `SUM(D${storeStartRow}:D${storeEndRow})` });
+  
+  setCell(currentRow, 4, netBaseAll, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
-  setCell(currentRow, 5, formatCurrencyVal(netCommAll), {
+  }, { isCurrency: true, formula: `SUM(E${storeStartRow}:E${storeEndRow})` });
+  
+  setCell(currentRow, 5, netCommAll, {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
-  setCell(currentRow, 6, formatCurrencyVal(netPayrollAll), {
+  }, { isCurrency: true, formula: `SUM(F${storeStartRow}:F${storeEndRow})` });
+  
+  setCell(currentRow, 6, netPayrollAll, {
     font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.greenBg } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
+  }, { isCurrency: true, formula: `SUM(G${storeStartRow}:G${storeEndRow})` });
   currentRow++;
 
-  ws['!ref'] = XLSX.utils.encode_range({
-    s: { r: 0, c: 0 },
-    e: { r: currentRow - 1, c: numCols - 1 },
-  });
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: currentRow - 1, c: numCols - 1 } });
   ws['!merges'] = merges;
-  ws['!cols'] = [
-    { wch: 30 },
-    { wch: 22 },
-    { wch: 22 },
-    { wch: 18 },
-    { wch: 22 },
-    { wch: 20 },
-    { wch: 26 },
-  ];
-
-  (ws as any)._meta = {
-    numCols,
-    rowCount: currentRow,
-    isMobile: false,
-  };
-
+  ws['!cols'] = [{ wch: 30 }, { wch: 22 }, { wch: 22 }, { wch: 18 }, { wch: 22 }, { wch: 20 }, { wch: 26 }];
+  (ws as any)._meta = { numCols, rowCount: currentRow, isMobile: false };
   return ws;
 }
 
 /**
- * Cria a planilha da loja OTIMIZADA PARA CELULAR / SMARTPHONE:
- * - Visão compacta que cabe na tela vertical do celular sem rolagem horizontal excessiva
- * - Fontes maiores (10.5pt a 12.5pt) para não precisar dar zoom com pinça no visor
- * - Linhas mais altas (26pt a 30pt) para visualização e rolagem confortável no touch
- * - Indicadores do topo organizados em cartões empilhados (largura exata da tela)
- * - Destaque imediato do Total a Receber no mês em verde negrito
+ * Cria a planilha da loja OTIMIZADA PARA CELULAR
  */
 function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
   const ws: XLSX.WorkSheet = {};
@@ -751,13 +720,19 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
   const totalCommissions = sellers.reduce((sum, s) => sum + (s.commissionAmount || 0), 0);
   const totalPayrollToPay = sellers.reduce((sum, s) => sum + (s.totalSalary || 0), 0);
 
-  const setCell = (r: number, c: number, v: string | number, style: any = {}) => {
+  const sellerStartRow = 8;
+  const sellerEndRow = sellers.length > 0 ? 7 + sellers.length : 8;
+
+  const setCell = (r: number, c: number, v: string | number, style: any = {}, opts?: { isCurrency?: boolean, formula?: string }) => {
     const cellRef = XLSX.utils.encode_cell({ r, c });
-    ws[cellRef] = {
-      v: v ?? '',
-      t: typeof v === 'number' ? 'n' : 's',
+    const cell: XLSX.CellObject = {
+      v: v ?? '', 
+      t: typeof v === 'number' || opts?.formula ? 'n' : 's',
       s: style,
     };
+    if (opts?.formula) cell.f = opts.formula;
+    if (opts?.isCurrency) cell.z = '"R$ "#,##0.00';
+    ws[cellRef] = cell;
   };
 
   const setMergedRow = (r: number, startCol: number, endCol: number, val: string, style: any) => {
@@ -768,7 +743,6 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
 
   const merges: XLSX.Range[] = [];
 
-  // 1. BANNER PRINCIPAL (Mobile)
   const titleText = `${store.name.toUpperCase()} - FECHAMENTO`;
   setMergedRow(currentRow, 0, numCols - 1, titleText, {
     font: { name: 'Segoe UI', sz: 13.5, bold: true, color: { rgb: PALETTE.textWhite } },
@@ -778,10 +752,8 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: numCols - 1 } });
   currentRow++;
 
-  // 2. SUBTÍTULO
   const now = new Date();
-  const dateStr = now.toLocaleDateString('pt-BR');
-  const subTitle = `Período: ${store.period || 'Mês de Fechamento'} · Emissão: ${dateStr}`;
+  const subTitle = `Período: ${store.period || 'Mês de Fechamento'} · Emissão: ${now.toLocaleDateString('pt-BR')}`;
   setMergedRow(currentRow, 0, numCols - 1, subTitle, {
     font: { name: 'Segoe UI', sz: 9.5, italic: true, color: { rgb: PALETTE.textMuted } },
     fill: { fgColor: { rgb: 'F8FAFC' } },
@@ -791,20 +763,18 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: numCols - 1 } });
   currentRow++;
 
-  // 3. CARD RESUMO RÁPIDO (Estruturado para preencher a largura sem quebrar)
-  // Linha 3: Vendas Loja e Vendas Equipe
   setCell(currentRow, 0, 'Vendas Loja:', {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 1, formatCurrencyVal(store.totalSales), {
+  setCell(currentRow, 1, store.totalSales || 0, {
     font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.navyDark } },
     fill: { fgColor: { rgb: 'FFFFFF' } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true });
   setCell(currentRow, 2, 'Vendas Equipe:', {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
@@ -812,29 +782,29 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   for (let c = 3; c <= valueCol; c++) {
-    setCell(currentRow, c, c === 3 ? formatCurrencyVal(grossTeamSales) : '', {
+    setCell(currentRow, c, c === 3 ? grossTeamSales : '', {
       font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.navyDark } },
       fill: { fgColor: { rgb: 'FFFFFF' } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
+    }, c === 3 ? { isCurrency: true, formula: sellers.length > 0 ? `SUM(B${sellerStartRow}:B${sellerEndRow})` : undefined } : undefined);
   }
   merges.push({ s: { r: currentRow, c: 3 }, e: { r: currentRow, c: valueCol } });
   currentRow++;
 
-  // Linha 4: Salários Base e Comissões
   setCell(currentRow, 0, 'Sal. Base Total:', {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 1, formatCurrencyVal(totalBaseSalaries), {
+  setCell(currentRow, 1, totalBaseSalaries, {
     font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: 'FFFFFF' } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: sellers.length > 0 ? `SUM(C${sellerStartRow}:C${sellerEndRow})` : undefined });
+  
   setCell(currentRow, 2, 'Comissões Total:', {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
@@ -842,17 +812,16 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   for (let c = 3; c <= valueCol; c++) {
-    setCell(currentRow, c, c === 3 ? formatCurrencyVal(totalCommissions) : '', {
+    setCell(currentRow, c, c === 3 ? totalCommissions : '', {
       font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.greenBold } },
       fill: { fgColor: { rgb: 'FFFFFF' } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
+    }, c === 3 ? { isCurrency: true, formula: sellers.length > 0 ? `SUM(D${sellerStartRow}:D${sellerEndRow})` : undefined } : undefined);
   }
   merges.push({ s: { r: currentRow, c: 3 }, e: { r: currentRow, c: valueCol } });
   currentRow++;
 
-  // Linha 5: CARD TOTAL A PAGAR (Destaque Verde)
   const payLabelEnd = Math.max(1, valueCol - 2);
   setMergedRow(currentRow, 0, payLabelEnd, 'TOTAL A PAGAR NO MÊS (Base + Com.):', {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.greenBold } },
@@ -868,7 +837,7 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: payLabelEnd } });
 
   for (let c = payLabelEnd + 1; c <= valueCol; c++) {
-    setCell(currentRow, c, c === payLabelEnd + 1 ? formatCurrencyVal(totalPayrollToPay) : '', {
+    setCell(currentRow, c, c === payLabelEnd + 1 ? totalPayrollToPay : '', {
       font: { name: 'Segoe UI', sz: 12.5, bold: true, color: { rgb: PALETTE.greenBold } },
       fill: { fgColor: { rgb: PALETTE.greenBg } },
       alignment: { horizontal: 'right', vertical: 'center' },
@@ -878,15 +847,13 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
         left: { style: 'thin', color: { rgb: PALETTE.greenBold } },
         right: { style: 'thin', color: { rgb: PALETTE.greenBold } },
       },
-    });
+    }, c === payLabelEnd + 1 ? { isCurrency: true, formula: sellers.length > 0 ? `SUM(E${sellerStartRow}:E${sellerEndRow})` : undefined } : undefined);
   }
   merges.push({ s: { r: currentRow, c: payLabelEnd + 1 }, e: { r: currentRow, c: valueCol } });
   currentRow++;
 
-  // Linha em branco
-  currentRow++;
+  currentRow++; // blank row
 
-  // 4. TABELA DE VENDEDORES (Legível e Ampla para Celular)
   const mobileHeaders = [
     'Funcionário',
     'Vendas (R$)',
@@ -894,9 +861,7 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     'Comissão',
     'TOTAL A RECEBER',
   ];
-  if (includeNotes) {
-    mobileHeaders.push('Obs');
-  }
+  if (includeNotes) mobileHeaders.push('Obs');
 
   mobileHeaders.forEach((h, colIdx) => {
     setCell(currentRow, colIdx, h, {
@@ -924,8 +889,8 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
   } else {
     sellers.forEach((seller, idx) => {
       const bg = idx % 2 === 0 ? 'FFFFFF' : PALETTE.zebraRow;
+      const rowNum = currentRow + 1;
 
-      // 0. Nome
       setCell(currentRow, 0, seller.name, {
         font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.textDark } },
         fill: { fgColor: { rgb: bg } },
@@ -933,32 +898,28 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
         border: BORDER_THIN,
       });
 
-      // 1. Vendas
-      setCell(currentRow, 1, formatCurrencyVal(seller.salesAmount), {
+      setCell(currentRow, 1, seller.salesAmount || 0, {
         font: { name: 'Segoe UI', sz: 10.5, color: { rgb: PALETTE.textDark } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true });
 
-      // 2. Salário Base
-      setCell(currentRow, 2, formatCurrencyVal(seller.baseSalary), {
+      setCell(currentRow, 2, seller.baseSalary || 0, {
         font: { name: 'Segoe UI', sz: 10.5, color: { rgb: PALETTE.textDark } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true });
 
-      // 3. Valor Comissão
-      setCell(currentRow, 3, formatCurrencyVal(seller.commissionAmount), {
+      setCell(currentRow, 3, seller.commissionAmount || 0, {
         font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.greenBold } },
         fill: { fgColor: { rgb: bg } },
         alignment: { horizontal: 'right', vertical: 'center' },
         border: BORDER_THIN,
-      });
+      }, { isCurrency: true });
 
-      // 4. Total a Receber no Mês
-      setCell(currentRow, 4, formatCurrencyVal(seller.totalSalary), {
+      setCell(currentRow, 4, seller.totalSalary || 0, {
         font: { name: 'Segoe UI', sz: 11.5, bold: true, color: { rgb: PALETTE.navyDark } },
         fill: { fgColor: { rgb: 'F0FDF4' } },
         alignment: { horizontal: 'right', vertical: 'center' },
@@ -968,9 +929,8 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
           left: { style: 'thin', color: { rgb: PALETTE.borderLight } },
           right: { style: 'thin', color: { rgb: PALETTE.borderLight } },
         },
-      });
+      }, { isCurrency: true, formula: `C${rowNum}+D${rowNum}` });
 
-      // 5. Obs
       if (includeNotes) {
         setCell(currentRow, 5, seller.notes || '-', {
           font: { name: 'Segoe UI', sz: 9.5, italic: !!seller.notes, color: { rgb: seller.notes ? PALETTE.textDark : PALETTE.textMuted } },
@@ -991,30 +951,34 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_THIN,
   });
-  setCell(currentRow, 1, formatCurrencyVal(grossTeamSales), {
+  setCell(currentRow, 1, grossTeamSales, {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
-  setCell(currentRow, 2, formatCurrencyVal(totalBaseSalaries), {
+  }, { isCurrency: true, formula: `SUM(B${sellerStartRow}:B${sellerEndRow})` });
+  
+  setCell(currentRow, 2, totalBaseSalaries, {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
-  setCell(currentRow, 3, formatCurrencyVal(totalCommissions), {
+  }, { isCurrency: true, formula: `SUM(C${sellerStartRow}:C${sellerEndRow})` });
+  
+  setCell(currentRow, 3, totalCommissions, {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
-  setCell(currentRow, 4, formatCurrencyVal(totalPayrollToPay), {
+  }, { isCurrency: true, formula: `SUM(D${sellerStartRow}:D${sellerEndRow})` });
+  
+  setCell(currentRow, 4, totalPayrollToPay, {
     font: { name: 'Segoe UI', sz: 12, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.greenBg } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
+  }, { isCurrency: true, formula: `SUM(E${sellerStartRow}:E${sellerEndRow})` });
+  
   if (includeNotes) {
     setCell(currentRow, 5, '-', {
       font: { name: 'Segoe UI', sz: 9.5, color: { rgb: PALETTE.textMuted } },
@@ -1024,11 +988,9 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     });
   }
   currentRow++;
+  currentRow++; // Linha em branco
 
-  // Linha em branco
-  currentRow++;
-
-  // 5. RESUMO FINAL COMPACTO
+  // RESUMO FINAL COMPACTO
   const summaryMerge = valueCol - 1;
   setMergedRow(currentRow, 0, summaryMerge, 'TOTAL VENDAS DA LOJA', {
     font: { name: 'Segoe UI', sz: 10, bold: true, color: { rgb: PALETTE.textDark } },
@@ -1037,12 +999,12 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMerge } });
-  setCell(currentRow, valueCol, formatCurrencyVal(store.totalSales), {
+  setCell(currentRow, valueCol, store.totalSales || 0, {
     font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true });
   currentRow++;
 
   setMergedRow(currentRow, 0, summaryMerge, 'TOTAL VENDAS DA EQUIPE', {
@@ -1052,12 +1014,12 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_THIN,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMerge } });
-  setCell(currentRow, valueCol, formatCurrencyVal(grossTeamSales), {
+  setCell(currentRow, valueCol, grossTeamSales, {
     font: { name: 'Segoe UI', sz: 11, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_THIN,
-  });
+  }, { isCurrency: true, formula: `SUM(B${sellerStartRow}:B${sellerEndRow})` });
   currentRow++;
 
   setMergedRow(currentRow, 0, summaryMerge, '(=) TOTAL A PAGAR NO MÊS (Base + Comissões)', {
@@ -1067,86 +1029,57 @@ function createStoreMobileSheet(store: Store): XLSX.WorkSheet {
     border: BORDER_DOUBLE_BOTTOM,
   });
   merges.push({ s: { r: currentRow, c: 0 }, e: { r: currentRow, c: summaryMerge } });
-  setCell(currentRow, valueCol, formatCurrencyVal(totalPayrollToPay), {
+  setCell(currentRow, valueCol, totalPayrollToPay, {
     font: { name: 'Segoe UI', sz: 12.5, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.greenBg } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
+  }, { isCurrency: true, formula: `SUM(E${sellerStartRow}:E${sellerEndRow})` });
   currentRow++;
 
-  ws['!ref'] = XLSX.utils.encode_range({
-    s: { r: 0, c: 0 },
-    e: { r: currentRow - 1, c: numCols - 1 },
-  });
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: currentRow - 1, c: numCols - 1 } });
   ws['!merges'] = merges;
 
-  // Larguras que preenchem a tela do smartphone com conforto e legibilidade
   if (includeNotes) {
-    ws['!cols'] = [
-      { wch: 20 }, // Funcionário
-      { wch: 15 }, // Vendas
-      { wch: 14 }, // Sal. Base
-      { wch: 14 }, // Comissão
-      { wch: 18 }, // A RECEBER
-      { wch: 22 }, // Obs
-    ];
+    ws['!cols'] = [{ wch: 20 }, { wch: 15 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 22 }];
   } else {
-    ws['!cols'] = [
-      { wch: 24 }, // Funcionário
-      { wch: 16 }, // Vendas
-      { wch: 15 }, // Sal. Base
-      { wch: 15 }, // Comissão
-      { wch: 20 }, // A RECEBER
-    ];
+    ws['!cols'] = [{ wch: 24 }, { wch: 16 }, { wch: 15 }, { wch: 15 }, { wch: 20 }];
   }
 
-  // Row heights generosas e confortáveis para leitura imediata
   const rowHeights: XLSX.RowInfo[] = [];
-  rowHeights[0] = { hpt: 36 }; // Banner
-  rowHeights[1] = { hpt: 22 }; // Subtítulo
-  rowHeights[2] = { hpt: 24 }; // Vendas
-  rowHeights[3] = { hpt: 24 }; // Salários
-  rowHeights[4] = { hpt: 30 }; // Total a pagar
+  rowHeights[0] = { hpt: 36 }; 
+  rowHeights[1] = { hpt: 22 }; 
+  rowHeights[2] = { hpt: 24 }; 
+  rowHeights[3] = { hpt: 24 }; 
+  rowHeights[4] = { hpt: 30 }; 
   ws['!rows'] = rowHeights;
 
-  // Exibição limpa em grade natural (sem forçar página impressa A4 que cria espaço em branco)
-  ws['!sheetViews'] = [
-    {
-      showGridLines: true,
-      zoomScale: 100,
-      zoomScaleNormal: 100,
-      workbookViewId: 0,
-      topLeftCell: 'A1',
-    },
-  ];
-
-  (ws as any)._meta = {
-    numCols,
-    rowCount: currentRow,
-    isMobile: true,
-  };
-
+  ws['!sheetViews'] = [{ showGridLines: true, zoomScale: 100, zoomScaleNormal: 100, workbookViewId: 0, topLeftCell: 'A1' }];
+  (ws as any)._meta = { numCols, rowCount: currentRow, isMobile: true };
   return ws;
 }
 
 /**
  * Cria a aba de Resumo Consolidado OTIMIZADA PARA CELULAR
- * - 4 colunas diretas: Loja, Vendas Loja, Vendas Equipe, TOTAL A PAGAR
- * - Não corta na tela do celular e permite leitura instantânea da rede
  */
 function createConsolidatedMobileSheet(stores: Store[]): XLSX.WorkSheet {
   const ws: XLSX.WorkSheet = {};
   let currentRow = 0;
   const numCols = 4;
 
-  const setCell = (r: number, c: number, v: string | number, style: any = {}) => {
+  const storeStartRow = 5;
+  const storeEndRow = stores.length > 0 ? 4 + stores.length : 5;
+
+  const setCell = (r: number, c: number, v: string | number, style: any = {}, opts?: { isCurrency?: boolean, formula?: string }) => {
     const cellRef = XLSX.utils.encode_cell({ r, c });
-    ws[cellRef] = {
-      v: v ?? '',
-      t: typeof v === 'number' ? 'n' : 's',
+    const cell: XLSX.CellObject = {
+      v: v ?? '', 
+      t: typeof v === 'number' || opts?.formula ? 'n' : 's',
       s: style,
     };
+    if (opts?.formula) cell.f = opts.formula;
+    if (opts?.isCurrency) cell.z = '"R$ "#,##0.00';
+    ws[cellRef] = cell;
   };
 
   const setMergedRow = (r: number, startCol: number, endCol: number, val: string, style: any) => {
@@ -1157,7 +1090,6 @@ function createConsolidatedMobileSheet(stores: Store[]): XLSX.WorkSheet {
 
   const merges: XLSX.Range[] = [];
 
-  // Banner
   setMergedRow(currentRow, 0, numCols - 1, 'RESUMO GERAL - REDE DE LOJAS', {
     font: { name: 'Segoe UI', sz: 13, bold: true, color: { rgb: PALETTE.textWhite } },
     fill: { fgColor: { rgb: PALETTE.navyDark } },
@@ -1199,9 +1131,7 @@ function createConsolidatedMobileSheet(stores: Store[]): XLSX.WorkSheet {
   });
   currentRow++;
 
-  let netStoreSales = 0;
-  let netGrossTeamSales = 0;
-  let netPayrollAll = 0;
+  let netStoreSales = 0, netGrossTeamSales = 0, netPayrollAll = 0;
 
   stores.forEach((store, idx) => {
     const bg = idx % 2 === 0 ? 'FFFFFF' : PALETTE.zebraRow;
@@ -1220,24 +1150,26 @@ function createConsolidatedMobileSheet(stores: Store[]): XLSX.WorkSheet {
       alignment: { horizontal: 'left', vertical: 'center' },
       border: BORDER_THIN,
     });
-    setCell(currentRow, 1, formatCurrencyVal(store.totalSales), {
+    setCell(currentRow, 1, store.totalSales || 0, {
       font: { name: 'Segoe UI', sz: 10.5, color: { rgb: PALETTE.textDark } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
-    setCell(currentRow, 2, formatCurrencyVal(grossSales), {
+    }, { isCurrency: true });
+    
+    setCell(currentRow, 2, grossSales, {
       font: { name: 'Segoe UI', sz: 10.5, color: { rgb: PALETTE.textDark } },
       fill: { fgColor: { rgb: bg } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
-    setCell(currentRow, 3, formatCurrencyVal(storePayroll), {
+    }, { isCurrency: true });
+    
+    setCell(currentRow, 3, storePayroll, {
       font: { name: 'Segoe UI', sz: 11.5, bold: true, color: { rgb: '15803D' } },
       fill: { fgColor: { rgb: 'F0FDF4' } },
       alignment: { horizontal: 'right', vertical: 'center' },
       border: BORDER_THIN,
-    });
+    }, { isCurrency: true });
     currentRow++;
   });
 
@@ -1248,112 +1180,54 @@ function createConsolidatedMobileSheet(stores: Store[]): XLSX.WorkSheet {
     alignment: { horizontal: 'left', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
   });
-  setCell(currentRow, 1, formatCurrencyVal(netStoreSales), {
+  setCell(currentRow, 1, netStoreSales, {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
-  setCell(currentRow, 2, formatCurrencyVal(netGrossTeamSales), {
+  }, { isCurrency: true, formula: `SUM(B${storeStartRow}:B${storeEndRow})` });
+  
+  setCell(currentRow, 2, netGrossTeamSales, {
     font: { name: 'Segoe UI', sz: 10.5, bold: true, color: { rgb: PALETTE.textDark } },
     fill: { fgColor: { rgb: PALETTE.navyLight } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
-  setCell(currentRow, 3, formatCurrencyVal(netPayrollAll), {
+  }, { isCurrency: true, formula: `SUM(C${storeStartRow}:C${storeEndRow})` });
+  
+  setCell(currentRow, 3, netPayrollAll, {
     font: { name: 'Segoe UI', sz: 12, bold: true, color: { rgb: PALETTE.greenBold } },
     fill: { fgColor: { rgb: PALETTE.greenBg } },
     alignment: { horizontal: 'right', vertical: 'center' },
     border: BORDER_DOUBLE_BOTTOM,
-  });
+  }, { isCurrency: true, formula: `SUM(D${storeStartRow}:D${storeEndRow})` });
   currentRow++;
 
-  ws['!ref'] = XLSX.utils.encode_range({
-    s: { r: 0, c: 0 },
-    e: { r: currentRow - 1, c: numCols - 1 },
-  });
+  ws['!ref'] = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: currentRow - 1, c: numCols - 1 } });
   ws['!merges'] = merges;
-  ws['!cols'] = [
-    { wch: 24 },
-    { wch: 16 },
-    { wch: 16 },
-    { wch: 20 },
-  ];
+  ws['!cols'] = [{ wch: 24 }, { wch: 16 }, { wch: 16 }, { wch: 20 }];
 
   const rowHeights: XLSX.RowInfo[] = [];
   rowHeights[0] = { hpt: 36 };
   rowHeights[1] = { hpt: 22 };
   ws['!rows'] = rowHeights;
 
-  ws['!sheetViews'] = [
-    {
-      showGridLines: true,
-      zoomScale: 100,
-      zoomScaleNormal: 100,
-      workbookViewId: 0,
-      topLeftCell: 'A1',
-    },
-  ];
-
-  (ws as any)._meta = {
-    numCols,
-    rowCount: currentRow,
-    isMobile: true,
-  };
-
+  ws['!sheetViews'] = [{ showGridLines: true, zoomScale: 100, zoomScaleNormal: 100, workbookViewId: 0, topLeftCell: 'A1' }];
+  (ws as any)._meta = { numCols, rowCount: currentRow, isMobile: true };
   return ws;
 }
 
-/**
- * Configura as dimensões exatas da planilha para abrir em visualização natural,
- * sem forçar um formato de papel A4 impresso que gerava aquele enorme espaço em branco
- * vazio embaixo no celular (iOS QuickLook / WhatsApp).
- */
-function appendSheetWithExactPrintArea(
-  wb: XLSX.WorkBook,
-  ws: XLSX.WorkSheet,
-  sheetName: string
-) {
-  const meta = (ws as any)._meta || {
-    numCols: 6,
-    rowCount: 20,
-    isMobile: false,
-  };
-
+function appendSheetWithExactPrintArea(wb: XLSX.WorkBook, ws: XLSX.WorkSheet, sheetName: string) {
+  const meta = (ws as any)._meta || { numCols: 6, rowCount: 20, isMobile: false };
   XLSX.utils.book_append_sheet(wb, ws, sheetName);
-
   const lastColLetter = XLSX.utils.encode_col(meta.numCols - 1);
   const lastRowNum = meta.rowCount;
-
-  // 1. Delimita rigorosamente a fronteira de células preenchidas (A1 até a última célula real)
   ws['!ref'] = `A1:${lastColLetter}${lastRowNum}`;
-
-  // 2. Viewport: garante foco inicial na célula A1, exibição das linhas de grade e zoom 100%
-  // Ao NÃO forçar _xlnm.Print_Area e fitToPage: true, o visualizador do celular (iOS QuickLook)
-  // abre a planilha diretamente ocupando a tela com fontes grandes e nítidas, em vez de desenhar
-  // uma folha de papel A4 gigante vazia embaixo!
-  ws['!sheetViews'] = [
-    {
-      showGridLines: true,
-      zoomScale: 100,
-      zoomScaleNormal: 100,
-      workbookViewId: 0,
-      topLeftCell: 'A1',
-    },
-  ];
-
-  // 3. Removemos qualquer configuração de página rígida que force impressão A4
+  ws['!sheetViews'] = [{ showGridLines: true, zoomScale: 100, zoomScaleNormal: 100, workbookViewId: 0, topLeftCell: 'A1' }];
   delete (ws as any)['!pageSetup'];
   delete (ws as any)['!margins'];
   delete (ws as any)['!printArea'];
 }
 
-/**
- * Função pública para exportar fechamento completo para Excel (.xlsx)
- * @param stores Lista de lojas
- * @param singleStoreId ID opcional para exportar apenas uma loja
- * @param deviceMode 'mobile' (otimizado para celular/WhatsApp) ou 'desktop' (formato expandido tradicional)
- */
 export function exportToExcel(
   stores: Store[],
   singleStoreId?: string,
@@ -1366,7 +1240,6 @@ export function exportToExcel(
 
   const wb = XLSX.utils.book_new();
   const existingSheetNames = new Set<string>();
-
   const isMobile = deviceMode === 'mobile';
   const prefix = isMobile ? 'Fechamento_Celular' : 'Fechamento_Desktop';
 
