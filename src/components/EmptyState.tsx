@@ -79,8 +79,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </p>
       </div>
 
-      {/* 3. Card Principal (Glassmorphism sutil) */}
-      <div className="relative bg-white/[0.02] border border-white/10 backdrop-blur-md shadow-2xl rounded-2xl p-6 sm:p-8 overflow-hidden">
+      {/* 3. Card Principal (Liquid Glass) */}
+      <div className="relative bg-[#090A0F]/60 border border-white/10 backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-2xl p-6 sm:p-8 overflow-hidden">
         {/* Top ambient highlight */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
@@ -210,7 +210,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
               return (
                 <div
                   key={store.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.06] hover:border-white/10 transition-all duration-200 group"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-black/30 hover:bg-black/50 border border-white/5 hover:border-white/10 backdrop-blur-sm transition-all duration-200 group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">

@@ -3,7 +3,7 @@
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: #090A0F;
+    background-color: #090A0F; /* Cor base caso a imagem falhe */
     color: #F8FAFC;
     overflow-x: hidden;
   }

@@ -195,7 +195,7 @@ export default function App() {
   const sellers = activeStore?.sellers || [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#090A0F] text-slate-100 font-sans selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen flex flex-col text-slate-100 font-sans selection:bg-emerald-500 selection:text-white bg-[url('/bg-waves.jpg')] bg-cover bg-center bg-fixed">
       {/* Toast Notification (High-End Dark Glass) */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-[#0D0F17]/95 backdrop-blur-xl text-white text-xs font-medium rounded-xl shadow-[0_0_25px_rgba(0,0,0,0.8)] border border-white/15 animate-in fade-in slide-in-from-bottom-2 duration-300">
